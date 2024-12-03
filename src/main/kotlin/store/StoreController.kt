@@ -1,6 +1,7 @@
 package store
 
 import java.io.FileReader
+import java.time.LocalDate
 
 class StoreController {
     private val inputView = InputView()
@@ -8,8 +9,7 @@ class StoreController {
 
     fun run() {
         outputView.printStart()
-        val product = getProducts()
-        val store = Store(product)
+        val store = Store(getProducts(), getPromotions())
         outputView.printProducts(store.getProducts())
         val purchaseProducts = inputView.readPurchaseProducts(store.getProducts())
     }
@@ -24,6 +24,13 @@ class StoreController {
         onlyPromotionProduct.forEach { products.add(it.copy(quantity = 0)) }
 
         return products.groupBy { it.name }.flatMap { (_, products) -> products.sortedByDescending { it.promotion } }
+    }
+
+    private fun getPromotions(): Map<String, Promotion> {
+        return FileReader("src/main/resources/promotions.md").readLines().drop(1).map {
+            val (name, buy, get, startDate, endDate) = it.split(",")
+            Pair(name, Promotion(buy.toInt(), get.toInt(), LocalDate.parse(startDate), LocalDate.parse(endDate)))
+        }.toMap()
     }
 
     private fun String.mapToNull(): String? {
