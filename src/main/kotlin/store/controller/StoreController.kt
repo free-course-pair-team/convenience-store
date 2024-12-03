@@ -1,5 +1,10 @@
-package store
+package store.controller
 
+import store.domain.entity.Product
+import store.domain.entity.Promotion
+import store.domain.entity.Store
+import store.view.InputView
+import store.view.OutputView
 import java.io.FileReader
 import java.time.LocalDate
 

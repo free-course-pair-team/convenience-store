@@ -1,6 +1,8 @@
-package store
+package store.view
 
 import camp.nextstep.edu.missionutils.Console
+import store.domain.entity.Product
+import store.domain.entity.PurchaseProduct
 
 class InputView {
 
