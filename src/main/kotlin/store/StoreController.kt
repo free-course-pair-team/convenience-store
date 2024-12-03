@@ -9,7 +9,9 @@ class StoreController {
     fun run() {
         outputView.printStart()
         val product = getProducts()
-        outputView.printProducts(product)
+        val store = Store(product)
+        outputView.printProducts(store.getProducts())
+        val purchaseProducts = inputView.readPurchaseProducts(store.getProducts())
     }
 
     private fun getProducts(): List<Product> {
