@@ -10,12 +10,17 @@ class OutputView {
     fun printProducts(products: List<Product>) {
         println("현재 보유하고 있는 상품입니다.")
         products.forEach { product ->
-            println("- ${product.name} ${product.price.wonFormat()}원 ${product.quantity}개 ${product.promotion ?: ""}")
+            println("- ${product.name} ${product.price.wonFormat()}원 ${product.quantity.zeroToSoldOut()} ${product.promotion ?: ""}")
         }
     }
 
     private fun Int.wonFormat(): String {
         val formatter = DecimalFormat("#,###")
         return formatter.format(this)
+    }
+
+    private fun Int.zeroToSoldOut(): String {
+        if (this == 0) return "재고 없음"
+        return this.toString() + "개"
     }
 }
