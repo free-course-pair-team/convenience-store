@@ -6,6 +6,9 @@ class ItemManager(private val items: MutableList<Item>) {
     fun getItems() =
         items.toList()
 
+    fun getItemsMessage(): List<String> {
+        return items.map { it.itemMessage() }
+    }
 
     companion object {
         fun from(products: List<String>, promotionInfoList: List<String>): ItemManager {

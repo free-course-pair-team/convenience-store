@@ -5,4 +5,12 @@ data class PromotionItem(
     val price: Int,
     val quantity: Int,
     val promotion: Promotion
-): Item
+): Item{
+    override fun toString(): String {
+        return "${name} ${price}원 ${quantity}개 ${promotion}"
+    }
+
+    override fun itemMessage() : String {
+        return "${name} ${price}원 ${quantity}개 ${promotion}"
+    }
+}
