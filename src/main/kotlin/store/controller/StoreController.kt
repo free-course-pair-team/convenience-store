@@ -22,7 +22,7 @@ class StoreController {
         val purchaseProducts = inputView.readPurchaseProducts(store.getProducts())
         val promotionCalculator =
             PromotionCalculator(store = store, promotionOptionInputView = PromotionOptionInputView())
-        println(promotionCalculator.runPromotion(purchaseProducts))
+        val promotionResult = promotionCalculator.runPromotion(purchaseProducts)
     }
 
     private fun getProducts(): List<Product> {
