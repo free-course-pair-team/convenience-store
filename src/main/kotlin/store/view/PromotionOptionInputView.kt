@@ -8,7 +8,7 @@ class PromotionOptionInputView {
 
         while (true) {
             try {
-                val answer = Console.readLine().replace(" ", "")
+                val answer = Console.readLine().replace(" ", "").uppercase()
                 when (answer) {
                     "Y" -> return true
                     "N" -> return false
@@ -24,7 +24,7 @@ class PromotionOptionInputView {
         println("현재 ${productName}은(는) 1개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)")
         while (true) {
             try {
-                val answer = Console.readLine().replace(" ", "")
+                val answer = Console.readLine().replace(" ", "").uppercase()
                 when (answer) {
                     "Y" -> return true
                     "N" -> return false
