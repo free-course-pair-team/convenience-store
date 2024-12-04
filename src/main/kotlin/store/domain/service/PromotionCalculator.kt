@@ -67,10 +67,10 @@ class PromotionCalculator(private val store: Store, private val promotionOptionI
         val buy = store.getPromotion().get(promotionProduct.promotion)?.buy ?: 0
         val get = store.getPromotion().get(promotionProduct.promotion)?.get ?: 0
         if (count >= (buy.plus(get))) {
-            if (count > promotionProduct.quantity) {
-                val promotionCount = (promotionProduct.quantity / (buy + get)) * buy //2 * 2 = 4
-                val freeCount = (promotionProduct.quantity / (buy + get)) * get //2*1 = 2
-                val noPromotionCount = promotionProduct.quantity - (promotionCount + freeCount) // 7 - 6 = 1
+            if (count > promotionProduct.getQuantity()) {
+                val promotionCount = (promotionProduct.getQuantity() / (buy + get)) * buy //2 * 2 = 4
+                val freeCount = (promotionProduct.getQuantity() / (buy + get)) * get //2*1 = 2
+                val noPromotionCount = promotionProduct.getQuantity() - (promotionCount + freeCount) // 7 - 6 = 1
                 val generalCount = count - (promotionCount + freeCount + noPromotionCount) // 10 - (4+2+1) = 3
                 var purchaseCompleteProduct = PurchaseCompleteProduct(
                     promotionProduct.name,
@@ -109,10 +109,10 @@ class PromotionCalculator(private val store: Store, private val promotionOptionI
             }
         } else { //구매하려는 수량이 극히 적어서, count <= buy+get인 경우
             //아닌 경우 promotionWithOptionalFreeProduct함수조건과 일치하게 됨
-            if (count >= promotionProduct.quantity) { //구매하려는 물량이 프로모션 재고보다 크거나 같아야 프로모션 미적용 물품이 생김
+            if (count >= promotionProduct.getQuantity()) { //구매하려는 물량이 프로모션 재고보다 크거나 같아야 프로모션 미적용 물품이 생김
                 val promotionCount = 0
                 val freeCount = 0
-                val noPromotionCount = promotionProduct.quantity //케이스 c. 2
+                val noPromotionCount = promotionProduct.getQuantity() //케이스 c. 2
                 val generalCount = count - (promotionCount + freeCount + noPromotionCount) //케이스 c. 2 - (0+0+2)
                 var purchaseCompleteProduct = PurchaseCompleteProduct(
                     promotionProduct.name,
@@ -145,7 +145,7 @@ class PromotionCalculator(private val store: Store, private val promotionOptionI
         val get = store.getPromotion().get(promotionProduct.promotion)?.get ?: 0
 
         if (count < (buy + get)) {
-            if (count < promotionProduct.quantity) {
+            if (count < promotionProduct.getQuantity()) {
                 val promotionCount = buy
                 val noPromotionCount = 0
                 val generalCount = 0

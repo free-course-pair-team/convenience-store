@@ -10,22 +10,24 @@ import java.io.FileReader
 import java.time.LocalDate
 
 class StoreController {
-    private lateinit var store: Store
     private val checkout = Checkout()
     private val inputView = InputView()
     private val outputView = OutputView()
 
     fun run() {
-        store = Store(getProducts(), getPromotions())
-        outputView.printStart()
-        outputView.printProducts(store.getProducts())
-        val purchaseProducts = retryInput { inputView.readPurchaseProducts(store.getProducts()) }
-        val promotionCalculator =
-            PromotionCalculator(store = store, promotionOptionInputView = PromotionOptionInputView())
-        val promotionResult = promotionCalculator.runPromotion(purchaseProducts)
-        val membershipResult = if (isMembershipDiscount()) checkout.membershipDiscount(promotionResult) else 0
-        printReceipt(promotionResult, membershipResult)
-        selectMorePurchase()
+        val store = Store(getProducts(), getPromotions())
+        while (true) {
+            outputView.printStart()
+            outputView.printProducts(store.getProducts())
+            val purchaseProducts = retryInput { inputView.readPurchaseProducts(store.getProducts()) }
+            val promotionCalculator =
+                PromotionCalculator(store = store, promotionOptionInputView = PromotionOptionInputView())
+            val promotionResult = promotionCalculator.runPromotion(purchaseProducts)
+            store.updateProducts(promotionResult)
+            val membershipResult = if (isMembershipDiscount()) checkout.membershipDiscount(promotionResult) else 0
+            printReceipt(promotionResult, membershipResult)
+            if (isRetryPurchaseStop()) return
+        }
     }
 
     private fun isMembershipDiscount(): Boolean = retryInput {
@@ -37,11 +39,11 @@ class StoreController {
         }
     }
 
-    private fun selectMorePurchase() = retryInput {
-        val choice = inputView.readMembershipDiscount()
+    private fun isRetryPurchaseStop() = retryInput {
+        val choice = inputView.readRetryPurchase()
         when (choice) {
-            "Y" -> run()
-            "N" -> return@retryInput
+            "Y" -> return@retryInput false
+            "N" -> return@retryInput true
             else -> throw IllegalArgumentException("[ERROR] 잘못된 입력입니다. 다시 입력해 주세요.")
         }
     }
@@ -50,9 +52,9 @@ class StoreController {
         promotionResult: List<PurchaseCompleteProduct>,
         membershipResult: Int
     ) {
-        outputView.ReceiptProductInfo(promotionResult)
-        outputView.ReceiptPromotionInfo(promotionResult)
-        outputView.ReceiptTotalInfo(promotionResult, membershipResult)
+        outputView.printReceiptProductInfo(promotionResult)
+        outputView.printReceiptPromotionInfo(promotionResult)
+        outputView.printReceiptTotalInfo(promotionResult, membershipResult)
     }
 
     private fun getProducts(): List<Product> {
