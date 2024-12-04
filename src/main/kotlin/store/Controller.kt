@@ -9,6 +9,7 @@ class Controller(private val fileReader: FileReader) {
     fun run() {
         val (products, promotions) = readProductsAndPromotionsFile()
         val itemManager = ItemManager.from(products, promotions)
+        println(itemManager.getItems())
     }
 
 

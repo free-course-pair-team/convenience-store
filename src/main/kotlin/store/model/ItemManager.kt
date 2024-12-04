@@ -1,18 +1,20 @@
 package store.model
 
-class ItemManager() {
-    private val items = mutableListOf<Item>()
+class ItemManager(private val items: MutableList<Item>) {
+//    private val items = mutableListOf<Item>()
 
+    fun getItems() =
+        items.toList()
 
 
     companion object {
-        fun from(items: List<String>, promotionInfoList: List<String>) {
-            items.forEach { item ->
+        fun from(products: List<String>, promotionInfoList: List<String>): ItemManager {
+            val t = products.map { item ->
                 val itemData = item.split(",")
                 val promotionDataList = promotionInfoList.map { it.split(",") }
                 getGeneralOrPromotionItem(itemData, promotionDataList)
             }
-            println(items)
+            return ItemManager(t.toMutableList())
         }
 
         private fun getGeneralOrPromotionItem(item: List<String>, promotionInfoList: List<List<String>>): Item {
