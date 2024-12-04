@@ -3,20 +3,26 @@ package store.controller
 import store.domain.entity.Product
 import store.domain.entity.Promotion
 import store.domain.entity.Store
+import store.domain.service.PromotionCalculator
 import store.view.InputView
 import store.view.OutputView
+import store.view.PromotionOptionInputView
 import java.io.FileReader
 import java.time.LocalDate
 
 class StoreController {
+    private lateinit var store: Store
     private val inputView = InputView()
     private val outputView = OutputView()
 
     fun run() {
         outputView.printStart()
-        val store = Store(getProducts(), getPromotions())
+        store = Store(getProducts(), getPromotions())
         outputView.printProducts(store.getProducts())
         val purchaseProducts = inputView.readPurchaseProducts(store.getProducts())
+        val promotionCalculator =
+            PromotionCalculator(store = store, promotionOptionInputView = PromotionOptionInputView())
+        println(promotionCalculator.runPromotion(purchaseProducts))
     }
 
     private fun getProducts(): List<Product> {
