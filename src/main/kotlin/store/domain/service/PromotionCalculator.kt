@@ -64,7 +64,6 @@ class PromotionCalculator(private val store: Store, private val promotionOptionI
         product: List<Product>
     ): PurchaseCompleteProduct? { //null을 반환한다는 건 할인되지 않았다는 뜻
         val promotionProduct = product.get(0)
-        val noPromotionProduct = product.get(1)
         val buy = store.getPromotion().get(promotionProduct.promotion)?.buy ?: 0
         val get = store.getPromotion().get(promotionProduct.promotion)?.get ?: 0
         if (count >= (buy.plus(get))) {
@@ -88,7 +87,6 @@ class PromotionCalculator(private val store: Store, private val promotionOptionI
                     provideOptionalNoPromotionPurchase(noPromotionCount + generalCount, purchaseCompleteProduct)
                 return purchaseCompleteProduct
             } else {
-
                 //프로모션 할인이 안되는 개수(PromotionProduct.미적용 + 일반)알려주기 + 구매의사 묻기
                 val promotionCount = (count / (buy + get)) * buy //2 * 2 = 4
                 val freeCount = (count / (buy + get)) * get //2*1 = 2
@@ -143,14 +141,12 @@ class PromotionCalculator(private val store: Store, private val promotionOptionI
         product: List<Product>
     ): PurchaseCompleteProduct? {
         val promotionProduct = product.get(0)
-        val noPromotionProduct = product.get(1)
         val buy = store.getPromotion().get(promotionProduct.promotion)?.buy ?: 0
         val get = store.getPromotion().get(promotionProduct.promotion)?.get ?: 0
 
         if (count < (buy + get)) {
             if (count < promotionProduct.quantity) {
                 val promotionCount = buy
-                val freeCount = get
                 val noPromotionCount = 0
                 val generalCount = 0
                 var purchaseCompleteProduct = PurchaseCompleteProduct(
@@ -179,9 +175,7 @@ class PromotionCalculator(private val store: Store, private val promotionOptionI
         product: List<Product>
     ): PurchaseCompleteProduct? {
         val promotionProduct = product.get(0)
-        val noPromotionProduct = product.get(1)
         val buy = store.getPromotion().get(promotionProduct.promotion)?.buy ?: 0
-        val get = store.getPromotion().get(promotionProduct.promotion)?.get ?: 0
 
         if (count < buy) {
             val purchaseCompleteProduct = PurchaseCompleteProduct(
