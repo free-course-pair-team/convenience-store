@@ -1,6 +1,5 @@
 package store.view
 
-import store.JudgeToStock
 import store.model.ItemManager
 
 class OutputView {
@@ -11,5 +10,6 @@ class OutputView {
     }
     fun introduceProducts(itemManager: ItemManager) {
         println(itemManager.getItemsMessage())
+        println()
     }
 }

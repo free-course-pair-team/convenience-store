@@ -13,4 +13,8 @@ data class GeneralItem(
     override fun itemMessage() : String {
         return "${name} ${price}원 ${judgeTheQuantity()}"
     }
+
+    override fun name(): String = name
+    override fun quantity(): Int = quantity
+
 }
