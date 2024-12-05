@@ -9,5 +9,4 @@ fun main() {
 
     val outputView = OutputView()
     Controller(FileReader(),outputView).run()
-
 }

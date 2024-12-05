@@ -10,11 +10,9 @@ class Controller(private val fileReader: FileReader,private val outputView : Out
     fun run() {
         val (products, promotions) = readProductsAndPromotionsFile()
         val itemManager = ItemManager.from(products, promotions)
-        println(itemManager.getItems())
 
         outputView.introduceStore()
         outputView.introduceProducts(itemManager)
-
     }
 
 

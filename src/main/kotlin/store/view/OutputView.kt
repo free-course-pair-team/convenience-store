@@ -1,5 +1,6 @@
 package store.view
 
+import store.JudgeToStock
 import store.model.ItemManager
 
 class OutputView {
@@ -9,6 +10,6 @@ class OutputView {
                 "현재 보유하고 있는 상품입니다.")
     }
     fun introduceProducts(itemManager: ItemManager) {
-       itemManager.getItemsMessage().forEach{println(it)}
+        println(itemManager.getItemsMessage())
     }
 }
