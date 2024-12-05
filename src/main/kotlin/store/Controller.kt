@@ -1,7 +1,9 @@
 package store
 
 import store.model.Item
-import store.model.ItemManager
+import store.domain.ItemManager
+import store.domain.PromotionManager
+import store.model.PromotionItem
 import store.util.FileReader
 import store.util.Validator
 import store.util.retryInput
@@ -12,7 +14,8 @@ class Controller(
     private val fileReader: FileReader,
     private val outputView: OutputView,
     private val inputView: InputView,
-    private val validator: Validator
+    private val validator: Validator,
+    private val promotionManager: PromotionManager,
 ) {
 
 
@@ -23,19 +26,35 @@ class Controller(
         outputView.introduceStore()
         outputView.introduceProducts(itemManager)
 
-        inputProductAndQuantity(itemManager.getItems()) {
+        val validatedProductAndQuantity = inputProductAndQuantity {
             inputView.inputProductAndQuantity()
         }
+        askOfferPromotionProduct(validatedProductAndQuantity)
     }
 
 
     private fun readProductsAndPromotionsFile(): Pair<List<String>, List<String>> =
         fileReader.readProducts() to fileReader.readPromotions()
 
-    private fun inputProductAndQuantity(items: List<Item>, input: () -> String) = retryInput {
+    private fun inputProductAndQuantity(input: () -> String) = retryInput {
         val inputProductAndQuantityList = input().split(",")
-        inputProductAndQuantityList.forEach {
-            validator.validateInputProductAndQuantity(it, items)
+        inputProductAndQuantityList.map {
+            validator.validateInputProductAndQuantity(it, ItemManager.getInstance().getItems())
+        }
+    }
+
+    private fun askOfferPromotionProduct(
+        productAndQuantity: List<Pair<String, Int>>,
+    ) {
+        val canOfferPromotionProduct = productAndQuantity.filter { ItemManager.getInstance().findPromotionItem(it.first) != null }.filter {
+            promotionManager.isOfferPromotionProduct(
+                it.first,
+                it.second,
+                ItemManager.getInstance().findPromotionItem(it.first)!!
+            )
+        }
+        canOfferPromotionProduct.map { it.first }.forEach {
+            println(it)
         }
     }
 

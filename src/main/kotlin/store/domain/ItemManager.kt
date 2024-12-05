@@ -1,10 +1,22 @@
-package store.model
+package store.domain
+
+import store.model.GeneralItem
+import store.model.Item
+import store.model.Promotion
+import store.model.PromotionItem
 
 class ItemManager(private val items: MutableList<Item>) {
-//    private val items = mutableListOf<Item>()
 
     fun getItems() =
         items.toList()
+
+    fun findPromotionItem(name: String): PromotionItem? {
+        val item = requireNotNull(items.find { it.name() == name })
+        if (item is PromotionItem) {
+            return item
+        }
+        return null
+    }
 
     fun getItemsMessage(): String {
         var lastPrint = listOf<String>("", "0", "0", "null")
@@ -22,19 +34,27 @@ class ItemManager(private val items: MutableList<Item>) {
                 lastPrint = value
                 string += it + "\n"
             }
-
         }
         return string
     }
 
     companion object {
+        private var itemManager: ItemManager? = null
+        fun getInstance():ItemManager {
+            if (itemManager == null) {
+                itemManager = ItemManager(mutableListOf())
+                return itemManager!!
+            }
+            return itemManager!!
+        }
         fun from(products: List<String>, promotionInfoList: List<String>): ItemManager {
             val t = products.map { item ->
                 val itemData = item.split(",")
                 val promotionDataList = promotionInfoList.map { it.split(",") }
                 getGeneralOrPromotionItem(itemData, promotionDataList)
             }
-            return ItemManager(t.toMutableList())
+            itemManager = ItemManager(t.toMutableList())
+            return itemManager!!
         }
 
         private fun getGeneralOrPromotionItem(

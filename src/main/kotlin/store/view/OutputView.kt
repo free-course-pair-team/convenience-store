@@ -1,6 +1,6 @@
 package store.view
 
-import store.model.ItemManager
+import store.domain.ItemManager
 
 class OutputView {
 
