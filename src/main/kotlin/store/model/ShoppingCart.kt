@@ -28,14 +28,17 @@ object ShoppingCart {
     fun getPromotionItems() =
         shoppingCartItems.filterIsInstance<PromotionItem>()
 
-    fun setPromotionItemQuantity(canAddPromotionItem: List<Pair<PromotionItem, Int>>) {
+    fun getGeneralItemQuantity(name : String) =
+        shoppingCartItems.filterIsInstance<GeneralItem>().find { it.name == name }?.quantity() ?:0
+
+    fun addPromotionItemQuantity(canAddPromotionItem: List<Pair<PromotionItem, Int>>) {
         canAddPromotionItem.forEach { (promotionItem, quantity) ->
             shoppingCartItems.find { it.name() == promotionItem.name && it is PromotionItem }
                 ?.addQuantity(quantity)
         }
     }
+    fun takeOutNotApplyPromotionItemQuantity(){
 
-
-
+    }
 
 }

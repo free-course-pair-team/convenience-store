@@ -31,12 +31,32 @@ class Controller(
             inputView.inputProductAndQuantity()
         }
         ShoppingCart.init(validatedProductAndQuantity)
+        presentPromotionItem(validatedProductAndQuantity)
+
+        println(ShoppingCart.shoppingCartItems)
+        askBuyNotApplyPromotionItem()
+
+
+    }
+    private fun askBuyNotApplyPromotionItem(){
+
+        for (promotionItem in ShoppingCart.getPromotionItems()){
+            if(promotionItem.quantity % (promotionItem.promotion.buy + promotionItem.promotion.get) == 0) continue
+
+            val notApplyPromotionItemQuantity = promotionItem.quantity % (promotionItem.promotion.buy + promotionItem.promotion.get)
+            val generalItemQuantity = ShoppingCart.getGeneralItemQuantity(promotionItem.name)
+            if(inputRetryAsk{
+                inputView.inputAskAddNotApplyPromotionItem(promotionItem.name,notApplyPromotionItemQuantity + generalItemQuantity)
+            }.not())
+        }
+    }
+
+    private fun presentPromotionItem(validatedProductAndQuantity: List<Pair<String, Int>>){
         val canAddOfferPromotionProduct = getCanAddOfferPromotionProduct(validatedProductAndQuantity)
         val t = canAddOfferPromotionProduct.filter {
-            inputAskCanAddPromotionItem {inputView.inputAskAddPromotionItem(it.first.name, it.second) }
+            inputRetryAsk {inputView.inputAskAddPromotionItem(it.first.name, it.second) }
         }
-        ShoppingCart.setPromotionItemQuantity(t)
-        println(ShoppingCart.shoppingCartItems)
+        ShoppingCart.addPromotionItemQuantity(t)
     }
 
 
@@ -51,7 +71,7 @@ class Controller(
     }
 
 
-    private fun inputAskCanAddPromotionItem(input: () -> String) = retryInput {
+    private fun inputRetryAsk(input: () -> String) = retryInput {
         val validatedInput = validator.validateInputYesOrNo(input())
         return@retryInput when (validatedInput) {
             Answer.YES -> true
