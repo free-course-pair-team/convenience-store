@@ -18,6 +18,12 @@ class ItemManager(private val items: MutableList<Item>) {
         return null
     }
 
+    fun findItem(name: String): GeneralItem? {
+        return items.filter { it.name() == name }.find { it is GeneralItem } as GeneralItem?
+
+
+    }
+
     fun getItemsMessage(): String {
         var lastPrint = listOf<String>("", "0", "0", "null")
         var string = ""
@@ -64,7 +70,6 @@ class ItemManager(private val items: MutableList<Item>) {
             val isPromotion = item[3]
 
             if (isPromotion == "null") {
-
                 return GeneralItem(item[0], item[1].toInt(), item[2].toInt())
             }
 

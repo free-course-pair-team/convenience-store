@@ -3,7 +3,7 @@ package store.model
 data class GeneralItem(
     val name: String,
     val price: Int,
-    val quantity: Int,
+    var quantity: Int,
 ): Item{
     fun judgeTheQuantity(): String {
         if(quantity == 0) return "재고 없음"
@@ -16,5 +16,8 @@ data class GeneralItem(
 
     override fun name(): String = name
     override fun quantity(): Int = quantity
+    override fun addQuantity(q: Int) {
+        TODO("Not yet implemented")
+    }
 
 }

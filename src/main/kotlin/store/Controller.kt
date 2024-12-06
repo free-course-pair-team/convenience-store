@@ -1,9 +1,10 @@
 package store
 
-import store.model.Item
 import store.domain.ItemManager
 import store.domain.PromotionManager
+import store.model.Answer
 import store.model.PromotionItem
+import store.model.ShoppingCart
 import store.util.FileReader
 import store.util.Validator
 import store.util.retryInput
@@ -29,7 +30,13 @@ class Controller(
         val validatedProductAndQuantity = inputProductAndQuantity {
             inputView.inputProductAndQuantity()
         }
-        askOfferPromotionProduct(validatedProductAndQuantity)
+        ShoppingCart.init(validatedProductAndQuantity)
+        val canAddOfferPromotionProduct = getCanAddOfferPromotionProduct(validatedProductAndQuantity)
+        val t = canAddOfferPromotionProduct.filter {
+            inputAskCanAddPromotionItem {inputView.inputAskAddPromotionItem(it.first.name, it.second) }
+        }
+        ShoppingCart.setPromotionItemQuantity(t)
+        println(ShoppingCart.shoppingCartItems)
     }
 
 
@@ -43,19 +50,25 @@ class Controller(
         }
     }
 
-    private fun askOfferPromotionProduct(
-        productAndQuantity: List<Pair<String, Int>>,
-    ) {
-        val canOfferPromotionProduct = productAndQuantity.filter { ItemManager.getInstance().findPromotionItem(it.first) != null }.filter {
-            promotionManager.isOfferPromotionProduct(
-                it.first,
-                it.second,
-                ItemManager.getInstance().findPromotionItem(it.first)!!
-            )
-        }
-        canOfferPromotionProduct.map { it.first }.forEach {
-            println(it)
+
+    private fun inputAskCanAddPromotionItem(input: () -> String) = retryInput {
+        val validatedInput = validator.validateInputYesOrNo(input())
+        return@retryInput when (validatedInput) {
+            Answer.YES -> true
+            Answer.NO -> false
         }
     }
 
+    private fun getCanAddOfferPromotionProduct(
+        productAndQuantity: List<Pair<String, Int>>,
+    ): List<Pair<PromotionItem, Int>> {
+
+        val promotionProductAndQuantity = productAndQuantity.filter {
+            ItemManager.getInstance().findPromotionItem(it.first) != null
+        }
+
+        return ShoppingCart.getPromotionItems().filter {
+            promotionManager.isOfferPromotionProduct(it, it.quantity,)
+        }.map { it to it.promotion.get }
+    }
 }

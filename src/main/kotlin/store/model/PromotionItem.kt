@@ -3,7 +3,7 @@ package store.model
 data class PromotionItem(
     val name: String,
     val price: Int,
-    val quantity: Int,
+    var quantity: Int,
     val promotion: Promotion
 ): Item{
     override fun itemMessage() : String {
@@ -12,4 +12,7 @@ data class PromotionItem(
 
     override fun name(): String = name
     override fun quantity(): Int = quantity
+    override fun addQuantity(q: Int) {
+        quantity += q
+    }
 }

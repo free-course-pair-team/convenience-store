@@ -5,4 +5,6 @@ interface Item {
     fun name(): String
 
     fun quantity(): Int
+
+    fun addQuantity(q: Int)
 }
