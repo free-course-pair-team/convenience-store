@@ -1,9 +1,11 @@
 package store
 
 import store.domain.ItemManager
+import store.domain.Membership
 import store.domain.PromotionManager
 import store.model.Answer
 import store.model.PromotionItem
+import store.model.Receipt
 import store.model.ShoppingCart
 import store.util.FileReader
 import store.util.Validator
@@ -17,6 +19,7 @@ class Controller(
     private val inputView: InputView,
     private val validator: Validator,
     private val promotionManager: PromotionManager,
+    private val membership: Membership
 ) {
 
 
@@ -31,13 +34,17 @@ class Controller(
             inputView.inputProductAndQuantity()
         }
         ShoppingCart.init(validatedProductAndQuantity)
-        presentPromotionItem(validatedProductAndQuantity)
+        askPresentPromotionItem(validatedProductAndQuantity)
 
         askBuyNotApplyPromotionItem()
+        val membershipDiscountAmount = askTakeMembership()
+        println(Receipt().showReceipt(membershipDiscountAmount))
+    }
 
-        println(ShoppingCart.shoppingCartItems)
-
-
+    private fun askTakeMembership(): Int {
+        val answer = inputRetryAsk { inputView.inputAskTakeMembership() }
+        if (answer) return membership.getMemberShipDiscountAmount()
+        return 0
     }
 
     private fun askBuyNotApplyPromotionItem() {
@@ -45,8 +52,7 @@ class Controller(
         for (promotionItem in ShoppingCart.getPromotionItems()) {
             if (promotionItem.quantity % (promotionItem.promotion.buy + promotionItem.promotion.get) == 0) continue
 
-            val notApplyPromotionItemQuantity =
-                promotionItem.quantity % (promotionItem.promotion.buy + promotionItem.promotion.get)
+            val notApplyPromotionItemQuantity = ShoppingCart.getNotApplyPromotionItemQuantity(promotionItem)
             val generalItemQuantity = ShoppingCart.getGeneralItemQuantity(promotionItem.name)
             val answer = inputRetryAsk {
                 inputView.inputAskAddNotApplyPromotionItem(
@@ -63,7 +69,7 @@ class Controller(
         }
     }
 
-    private fun presentPromotionItem(validatedProductAndQuantity: List<Pair<String, Int>>) {
+    private fun askPresentPromotionItem(validatedProductAndQuantity: List<Pair<String, Int>>) {
         val canAddOfferPromotionProduct =
             getCanAddOfferPromotionProduct(validatedProductAndQuantity)
         val t = canAddOfferPromotionProduct.filter {

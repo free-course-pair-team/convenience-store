@@ -28,8 +28,22 @@ object ShoppingCart {
     fun getPromotionItems() =
         shoppingCartItems.filterIsInstance<PromotionItem>()
 
+    fun getGeneralItems() =
+        shoppingCartItems.filterIsInstance<GeneralItem>()
+
+    fun getNotApplyPromotionItemQuantity(promotionItem: PromotionItem) =
+        promotionItem.quantity % (promotionItem.promotion.buy + promotionItem.promotion.get)
+
+    fun getNotApplyPromotionItemQuantity2(name: String) =
+        shoppingCartItems.filterIsInstance<PromotionItem>().find { it.name == name }?.let {
+            getNotApplyPromotionItemQuantity(it)
+        } ?: 0
+
+    fun getPromotionItemQuantity(promotionItem: PromotionItem) =
+        promotionItem.quantity / (promotionItem.promotion.buy + promotionItem.promotion.get)
+
     fun getGeneralItemQuantity(name : String) =
-        shoppingCartItems.filterIsInstance<GeneralItem>().find { it.name == name }?.quantity() ?:0
+        shoppingCartItems.filterIsInstance<GeneralItem>().find { it.name == name }?.quantity()  ?:0
 
     fun addPromotionItemQuantity(canAddPromotionItem: List<Pair<PromotionItem, Int>>) {
         canAddPromotionItem.forEach { (promotionItem, quantity) ->

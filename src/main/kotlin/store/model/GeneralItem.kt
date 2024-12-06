@@ -16,6 +16,8 @@ data class GeneralItem(
 
     override fun name(): String = name
     override fun quantity(): Int = quantity
+    override fun price(): Int = price
+
     override fun addQuantity(q: Int) {
         TODO("Not yet implemented")
     }
