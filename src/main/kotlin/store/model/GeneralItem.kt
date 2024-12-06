@@ -20,4 +20,8 @@ data class GeneralItem(
         TODO("Not yet implemented")
     }
 
+    override fun takeOutQuantity(q: Int) {
+        quantity -= q
+    }
+
 }

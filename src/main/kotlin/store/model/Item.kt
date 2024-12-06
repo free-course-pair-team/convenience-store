@@ -7,4 +7,6 @@ interface Item {
     fun quantity(): Int
 
     fun addQuantity(q: Int)
+
+    fun takeOutQuantity(q: Int)
 }

@@ -15,4 +15,8 @@ data class PromotionItem(
     override fun addQuantity(q: Int) {
         quantity += q
     }
+
+    override fun takeOutQuantity(q: Int) {
+        quantity -= q
+    }
 }

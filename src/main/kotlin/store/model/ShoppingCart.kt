@@ -37,8 +37,15 @@ object ShoppingCart {
                 ?.addQuantity(quantity)
         }
     }
-    fun takeOutNotApplyPromotionItemQuantity(){
+    fun takeOutNotApplyPromotionItemQuantity(name: String, takeOutQuantities: List<Int>){
+        shoppingCartItems.filter { it.name() == name }.forEachIndexed { index, item ->
+            item.takeOutQuantity(takeOutQuantities[index])
+        }
+        organizeShoppingCartItems()
+    }
 
+    private fun organizeShoppingCartItems() {
+        shoppingCartItems.removeAll { it.quantity() == 0 }
     }
 
 }

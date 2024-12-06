@@ -33,28 +33,41 @@ class Controller(
         ShoppingCart.init(validatedProductAndQuantity)
         presentPromotionItem(validatedProductAndQuantity)
 
-        println(ShoppingCart.shoppingCartItems)
         askBuyNotApplyPromotionItem()
+
+        println(ShoppingCart.shoppingCartItems)
 
 
     }
-    private fun askBuyNotApplyPromotionItem(){
 
-        for (promotionItem in ShoppingCart.getPromotionItems()){
-            if(promotionItem.quantity % (promotionItem.promotion.buy + promotionItem.promotion.get) == 0) continue
+    private fun askBuyNotApplyPromotionItem() {
 
-            val notApplyPromotionItemQuantity = promotionItem.quantity % (promotionItem.promotion.buy + promotionItem.promotion.get)
+        for (promotionItem in ShoppingCart.getPromotionItems()) {
+            if (promotionItem.quantity % (promotionItem.promotion.buy + promotionItem.promotion.get) == 0) continue
+
+            val notApplyPromotionItemQuantity =
+                promotionItem.quantity % (promotionItem.promotion.buy + promotionItem.promotion.get)
             val generalItemQuantity = ShoppingCart.getGeneralItemQuantity(promotionItem.name)
-            if(inputRetryAsk{
-                inputView.inputAskAddNotApplyPromotionItem(promotionItem.name,notApplyPromotionItemQuantity + generalItemQuantity)
-            }.not())
+            val answer = inputRetryAsk {
+                inputView.inputAskAddNotApplyPromotionItem(
+                    promotionItem.name,
+                    notApplyPromotionItemQuantity + generalItemQuantity
+                )
+            }.not()
+            if (answer) {
+                ShoppingCart.takeOutNotApplyPromotionItemQuantity(
+                    promotionItem.name,
+                    listOf(notApplyPromotionItemQuantity, generalItemQuantity)
+                )
+            }
         }
     }
 
-    private fun presentPromotionItem(validatedProductAndQuantity: List<Pair<String, Int>>){
-        val canAddOfferPromotionProduct = getCanAddOfferPromotionProduct(validatedProductAndQuantity)
+    private fun presentPromotionItem(validatedProductAndQuantity: List<Pair<String, Int>>) {
+        val canAddOfferPromotionProduct =
+            getCanAddOfferPromotionProduct(validatedProductAndQuantity)
         val t = canAddOfferPromotionProduct.filter {
-            inputRetryAsk {inputView.inputAskAddPromotionItem(it.first.name, it.second) }
+            inputRetryAsk { inputView.inputAskAddPromotionItem(it.first.name, it.second) }
         }
         ShoppingCart.addPromotionItemQuantity(t)
     }
@@ -88,7 +101,7 @@ class Controller(
         }
 
         return ShoppingCart.getPromotionItems().filter {
-            promotionManager.isOfferPromotionProduct(it, it.quantity,)
+            promotionManager.isOfferPromotionProduct(it, it.quantity)
         }.map { it to it.promotion.get }
     }
 }
