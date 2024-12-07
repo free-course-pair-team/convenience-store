@@ -4,14 +4,12 @@ import store.model.GeneralItem
 import store.model.Item
 import store.model.Promotion
 import store.model.PromotionItem
+import store.model.Stock
 
-class ItemManager(private val items: MutableList<Item>) {
-
-    fun getItems() =
-        items.toList()
+class ItemManager(private val stock: Stock) {
 
     fun findPromotionItem2(name: String): PromotionItem? {
-        val item = requireNotNull(items.find { it.name() == name })
+        val item = requireNotNull(stock.items.find { it.name() == name })
         if (item is PromotionItem) {
             return item
         }
@@ -19,55 +17,17 @@ class ItemManager(private val items: MutableList<Item>) {
     }
 
     fun findPromotionItem(name: String): PromotionItem =
-        requireNotNull(items.filterIsInstance<PromotionItem>().find { it.name() == name })
+        requireNotNull(stock.items.filterIsInstance<PromotionItem>().find { it.name() == name })
 
 
     fun findItem(name: String): GeneralItem? {
-        return items.filter { it.name() == name }.find { it is GeneralItem } as GeneralItem?
+        return stock.items.filter { it.name() == name }.find { it is GeneralItem } as GeneralItem?
 
 
-    }
-
-    fun getItemsMessage(): String {
-        var lastPrint = listOf<String>("", "0", "0", "null")
-        var string = ""
-
-        items.map { it.itemMessage() }.forEach {
-
-            var value = it.split(" ") + "null"
-
-            if (lastPrint[0] != value[0].toString() && lastPrint[3] != "null") {
-                string += "${lastPrint[0]} ${lastPrint[1]} 재고 없음\n"
-                lastPrint = value
-                string += it + "\n"
-            } else {
-                lastPrint = value
-                string += it + "\n"
-            }
-        }
-        return string
     }
 
     companion object {
-        private var itemManager: ItemManager? = null
-        fun getInstance():ItemManager {
-            if (itemManager == null) {
-                itemManager = ItemManager(mutableListOf())
-                return itemManager!!
-            }
-            return itemManager!!
-        }
-        fun from(products: List<String>, promotionInfoList: List<String>): ItemManager {
-            val t = products.map { item ->
-                val itemData = item.split(",")
-                val promotionDataList = promotionInfoList.map { it.split(",") }
-                getGeneralOrPromotionItem(itemData, promotionDataList)
-            }
-            itemManager = ItemManager(t.toMutableList())
-            return itemManager!!
-        }
-
-        private fun getGeneralOrPromotionItem(
+        fun getGeneralOrPromotionItem(
             item: List<String>,
             promotionInfoList: List<List<String>>
         ): Item {

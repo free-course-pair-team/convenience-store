@@ -7,6 +7,7 @@ import store.model.Answer
 import store.model.PromotionItem
 import store.model.Receipt
 import store.model.ShoppingCart
+import store.model.Stock
 import store.util.FileReader
 import store.util.Validator
 import store.util.retryInput
@@ -25,18 +26,21 @@ class Controller(
 
     fun run() {
         val (products, promotions) = readProductsAndPromotionsFile()
-        val itemManager = ItemManager.from(products, promotions)
+        val stock = Stock.from(products, promotions)
+        val itemManager = ItemManager(stock)
 
         outputView.introduceStore()
-        outputView.introduceProducts(itemManager)
+        outputView.introduceProducts(stock)
 
         val validatedProductAndQuantity = inputProductAndQuantity {
             inputView.inputProductAndQuantity()
         }
-        ShoppingCart.init(validatedProductAndQuantity)
-        askPresentPromotionItem(ShoppingCart.getPromotionItems())
+        ShoppingCart.init(validatedProductAndQuantity, itemManager)
+        askPresentPromotionItem(ShoppingCart.getPromotionItems(), itemManager)
 
-        askBuyNotApplyPromotionItem()
+        askBuyNotApplyPromotionItem { name: String, quantity: Int ->
+            inputView.inputAskAddNotApplyPromotionItem(name, quantity)
+        }
         val membershipDiscountAmount = askTakeMembership()
         println(Receipt().showReceipt(membershipDiscountAmount))
     }
@@ -47,21 +51,17 @@ class Controller(
         return 0
     }
 
-    private fun askBuyNotApplyPromotionItem() {
-
+    private fun askBuyNotApplyPromotionItem(input: (name: String, quantity: Int) -> String) {
         for (promotionItem in ShoppingCart.getPromotionItems()) {
-            if (promotionItem.quantity % (promotionItem.promotion.buy + promotionItem.promotion.get) == 0) continue
+            if (promotionManager.isExistApplyPromotionProductQuantity(promotionItem).not()) continue
 
             val notApplyPromotionItemQuantity =
                 ShoppingCart.getNotApplyPromotionItemQuantity(promotionItem)
             val generalItemQuantity = ShoppingCart.getGeneralItemQuantity(promotionItem.name)
             val answer = inputRetryAsk {
-                inputView.inputAskAddNotApplyPromotionItem(
-                    promotionItem.name,
-                    notApplyPromotionItemQuantity + generalItemQuantity
-                )
-            }.not()
-            if (answer) {
+                input(promotionItem.name, notApplyPromotionItemQuantity + generalItemQuantity)
+            }
+            if (answer.not()) {
                 ShoppingCart.takeOutNotApplyPromotionItemQuantity(
                     promotionItem.name,
                     listOf(notApplyPromotionItemQuantity, generalItemQuantity)
@@ -70,9 +70,9 @@ class Controller(
         }
     }
 
-    private fun askPresentPromotionItem(promotionItems: List<PromotionItem>,) {
+    private fun askPresentPromotionItem(promotionItems: List<PromotionItem>, itemManager: ItemManager) {
         val canAddOfferPromotionProduct =
-            promotionManager.getCanAddOfferPromotionProduct(promotionItems)
+            promotionManager.getCanAddOfferPromotionProduct(promotionItems, itemManager)
         val acceptAddPromotionProduct = canAddOfferPromotionProduct.filter {
             inputRetryAsk { inputView.inputAskAddPromotionItem(it.first.name, it.second) }
         }
@@ -86,7 +86,7 @@ class Controller(
     private fun inputProductAndQuantity(input: () -> String) = retryInput {
         val inputProductAndQuantityList = input().split(",")
         inputProductAndQuantityList.map {
-            validator.validateInputProductAndQuantity(it, ItemManager.getInstance().getItems())
+            validator.validateInputProductAndQuantity(it, Stock.getInstance().items)
         }
     }
 

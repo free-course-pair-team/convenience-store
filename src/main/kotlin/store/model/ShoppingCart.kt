@@ -6,10 +6,10 @@ object ShoppingCart {
     var shoppingCartItems = mutableListOf<Item>()
 
     // 초기화
-    fun init(inputProductAndQuantity: List<Pair<String, Int>>) {
+    fun init(inputProductAndQuantity: List<Pair<String, Int>>, itemManager: ItemManager) {
         inputProductAndQuantity.forEach { (name, quantity) ->
-            val promotionItem = ItemManager.getInstance().findPromotionItem2(name)
-            val generalItem = ItemManager.getInstance().findItem(name)
+            val promotionItem = itemManager.findPromotionItem2(name)
+            val generalItem = itemManager.findItem(name)
             if (promotionItem == null && generalItem != null) {
                 shoppingCartItems.add(GeneralItem(name, generalItem.price, quantity))
             } else if (promotionItem != null && generalItem == null){
@@ -35,7 +35,7 @@ object ShoppingCart {
     fun getNotApplyPromotionItemQuantity(promotionItem: PromotionItem) =
         promotionItem.quantity % (promotionItem.promotion.buy + promotionItem.promotion.get)
 
-    fun getNotApplyPromotionItemQuantity2(name: String) =
+    fun getNotApplyPromotionItemQuantity(name: String) =
         shoppingCartItems.filterIsInstance<PromotionItem>().find { it.name == name }?.let {
             getNotApplyPromotionItemQuantity(it)
         } ?: 0
