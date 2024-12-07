@@ -1,17 +1,19 @@
 package store.model
 
+import store.util.toWonFormat
+
 data class GeneralItem(
     private val name: String,
     private val price: Int,
     private var quantity: Int,
 ): Item{
-    fun judgeTheQuantity(): String {
+    private fun judgeTheQuantity(): String {
         if(quantity == 0) return "재고 없음"
         return quantity.toString() + "개"
     }
 
     override fun itemMessage() : String {
-        return "${name} ${price}원 ${judgeTheQuantity()}"
+        return "- ${name} ${price.toWonFormat()}원 ${judgeTheQuantity()}"
     }
 
     override fun name(): String = name

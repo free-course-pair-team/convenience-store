@@ -14,7 +14,7 @@ class ShoppingCartFactory() {
         return ShoppingCart(items)
     }
 
-    fun add(stock: Stock, name: String, quantity: Int) {
+    private fun add(stock: Stock, name: String, quantity: Int) {
         val filteringItems = stock.items.filter { it.name() == name }
         var remainingQuantity = quantity
         for (item in filteringItems) {

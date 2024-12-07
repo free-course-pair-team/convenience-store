@@ -1,22 +1,8 @@
 package store.model
 
-import store.domain.Membership
-import store.util.minusFormat
 import store.util.toWonFormat
 
 class Receipt {
-
-//    ===========W 편의점=============
-//    상품명		수량	금액
-//    콜라		3 	3,000
-//    에너지바 		5 	10,000
-//    ===========증	정=============
-//    콜라		1
-//    ==============================
-//    총구매액		8	13,000
-//    행사할인			-1,000
-//    멤버십할인			-3,000
-//    내실돈			 9,000
 
     fun showReceipt(membershipDiscountAmount: Int, shoppingCart: ShoppingCart): String {
         val s = StringBuilder()
@@ -33,11 +19,11 @@ class Receipt {
         }
         s.appendLine("==============================")
         val totalAmountBeforeDiscount = groupedShoppingCartItems.sumOf { it.third }
-        val eventDiscountAmount = promotionItems.sumOf { it.third }
+        val eventDiscountAmount = promotionItems.sumOf { it.third*it.second }
         s.appendLine("총구매액\t\t${groupedShoppingCartItems.sumOf { it.second }}\t${totalAmountBeforeDiscount.toWonFormat()}")
 
-        s.appendLine("행사할인\t\t\t${eventDiscountAmount.minusFormat()}")
-        s.appendLine("멤버십할인\t\t\t${membershipDiscountAmount.minusFormat()}")
+        s.appendLine("행사할인\t\t\t${eventDiscountAmount.toWonFormat()}")
+        s.appendLine("멤버십할인\t\t\t${membershipDiscountAmount.toWonFormat()}")
         val spendAmount = totalAmountBeforeDiscount - eventDiscountAmount - membershipDiscountAmount
         s.appendLine("내실돈\t\t\t${spendAmount.toWonFormat()}")
 
@@ -49,7 +35,8 @@ class Receipt {
             Triple(
                 key,
                 value.sumOf { it.quantity() },
-                value.fold(0) { acc, item -> acc + item.price() * item.quantity() }
+//                value.fold(0) { acc, item -> acc + item.price() * item.quantity() }
+                value.sumOf { it.price()*it.quantity() }
             )
         }
 

@@ -4,10 +4,6 @@ import store.domain.ItemManager
 
 class ShoppingCart(private var shoppingCartItems: MutableList<Item>) {
 
-    init {
-        println("shoppingCartItems: $shoppingCartItems")
-    }
-
     fun getItems() = shoppingCartItems.toList()
     fun getPromotionItems() =
         shoppingCartItems.filterIsInstance<PromotionItem>()
@@ -15,7 +11,7 @@ class ShoppingCart(private var shoppingCartItems: MutableList<Item>) {
     fun getGeneralItems() =
         shoppingCartItems.filterIsInstance<GeneralItem>()
 
-    fun getNotApplyPromotionItemQuantity(promotionItem: PromotionItem) =
+    private fun getNotApplyPromotionItemQuantity(promotionItem: PromotionItem) =
         promotionItem.quantity() % (promotionItem.promotion.buy + promotionItem.promotion.get)
 
     fun getNotApplyPromotionItemQuantity(name: String) =
@@ -29,13 +25,16 @@ class ShoppingCart(private var shoppingCartItems: MutableList<Item>) {
     fun getGeneralItemQuantity(name : String) =
         shoppingCartItems.filterIsInstance<GeneralItem>().find { it.name() == name }?.quantity()  ?:0
 
+    fun getNotApplyItemsQuantity(item: PromotionItem) =
+        listOf(getNotApplyPromotionItemQuantity(item),getGeneralItemQuantity(item.name()))
+
     fun addPromotionItemQuantity(canAddPromotionItem: List<Pair<PromotionItem, Int>>) {
         canAddPromotionItem.forEach { (promotionItem, quantity) ->
             shoppingCartItems.find { it.name() == promotionItem.name() && it is PromotionItem }
                 ?.addQuantity(quantity)
         }
     }
-    fun takeOutNotApplyPromotionItemQuantity(name: String, takeOutQuantities: List<Int>){
+    fun takeOutNotApplyPromotionQuantity(name: String, takeOutQuantities: List<Int>){
         shoppingCartItems.filter { it.name() == name }.forEachIndexed { index, item ->
             item.takeOutQuantity(takeOutQuantities[index])
         }

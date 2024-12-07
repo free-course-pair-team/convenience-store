@@ -52,28 +52,28 @@ class Controller(
         return 0
     }
 
-    private fun askBuyNotApplyPromotionItem(shoppingCart: ShoppingCart, input: (name: String, quantity: Int) -> String) {
-        for (promotionItem in shoppingCart.getPromotionItems()) {
-            if (promotionManager.isExistApplyPromotionProductQuantity(promotionItem).not()) continue
-
-            val notApplyPromotionItemQuantity =
-                shoppingCart.getNotApplyPromotionItemQuantity(promotionItem)
-            val generalItemQuantity = shoppingCart.getGeneralItemQuantity(promotionItem.name())
+    private fun askBuyNotApplyPromotionItem(
+        shoppingCart: ShoppingCart,
+        input: (name: String, quantity: Int) -> String,
+    ) {
+        for (item in shoppingCart.getPromotionItems()) {
+            if (promotionManager.isExistApplyPromotionProductQuantity(item).not()) continue
+            val notApplyItemsQuantity = shoppingCart.getNotApplyItemsQuantity(item)
             val answer = inputRetryAsk {
-                input(promotionItem.name(), notApplyPromotionItemQuantity + generalItemQuantity)
+                input(item.name(), notApplyItemsQuantity[0] + notApplyItemsQuantity[1])
             }
             if (answer.not()) {
-                shoppingCart.takeOutNotApplyPromotionItemQuantity(
-                    promotionItem.name(),
-                    listOf(notApplyPromotionItemQuantity, generalItemQuantity)
-                )
+                shoppingCart.takeOutNotApplyPromotionQuantity(item.name(), notApplyItemsQuantity)
             }
         }
     }
 
     private fun askPresentPromotionItem(shoppingCart: ShoppingCart, itemManager: ItemManager) {
         val canAddOfferPromotionProduct =
-            promotionManager.getCanAddOfferPromotionProduct(shoppingCart.getPromotionItems(), itemManager)
+            promotionManager.getCanAddOfferPromotionProduct(
+                shoppingCart.getPromotionItems(),
+                itemManager
+            )
         val acceptAddPromotionProduct = canAddOfferPromotionProduct.filter {
             inputRetryAsk { inputView.inputAskAddPromotionItem(it.first.name(), it.second) }
         }

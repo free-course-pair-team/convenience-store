@@ -4,23 +4,18 @@ import store.domain.ItemManager
 
 data class Stock(val items: MutableList<Item>) {
     override fun toString(): String {
-        var lastPrint = listOf("", "0", "0", "null")
-        var string = ""
+        var last: Item = items.first()
+        val printedItems = items.toMutableList()
 
-        items.map { it.itemMessage() }.forEach {
-
-            var value = it.split(" ") + "null"
-
-            if (lastPrint[0] != value[0].toString() && lastPrint[3] != "null") {
-                string += "${lastPrint[0]} ${lastPrint[1]} 재고 없음\n"
-                lastPrint = value
-                string += it + "\n"
-            } else {
-                lastPrint = value
-                string += it + "\n"
+        for (current in items.slice(1..items.lastIndex)) {
+            if (last.name() != current.name() && last is PromotionItem) {
+                val index = printedItems.indexOf(last)
+                printedItems.add(index+1, GeneralItem(last.name(), last.price(), 0))
             }
+            printedItems.add(current)
+            last = current
         }
-        return string
+        return printedItems.joinToString("\n") { it.itemMessage() }
     }
 
     companion object {
