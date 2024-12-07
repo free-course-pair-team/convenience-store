@@ -34,7 +34,6 @@ class Controller(
             inputView.inputProductAndQuantity()
         }
         ShoppingCart.init(validatedProductAndQuantity)
-        println("shoppingCartItem: ${ShoppingCart.shoppingCartItems}")
         askPresentPromotionItem(ShoppingCart.getPromotionItems())
 
         askBuyNotApplyPromotionItem()

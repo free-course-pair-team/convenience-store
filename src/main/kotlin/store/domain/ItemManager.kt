@@ -10,13 +10,17 @@ class ItemManager(private val items: MutableList<Item>) {
     fun getItems() =
         items.toList()
 
-    fun findPromotionItem(name: String): PromotionItem? {
+    fun findPromotionItem2(name: String): PromotionItem? {
         val item = requireNotNull(items.find { it.name() == name })
         if (item is PromotionItem) {
             return item
         }
         return null
     }
+
+    fun findPromotionItem(name: String): PromotionItem =
+        requireNotNull(items.filterIsInstance<PromotionItem>().find { it.name() == name })
+
 
     fun findItem(name: String): GeneralItem? {
         return items.filter { it.name() == name }.find { it is GeneralItem } as GeneralItem?

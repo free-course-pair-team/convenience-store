@@ -8,7 +8,7 @@ object ShoppingCart {
     // 초기화
     fun init(inputProductAndQuantity: List<Pair<String, Int>>) {
         inputProductAndQuantity.forEach { (name, quantity) ->
-            val promotionItem = ItemManager.getInstance().findPromotionItem(name)
+            val promotionItem = ItemManager.getInstance().findPromotionItem2(name)
             val generalItem = ItemManager.getInstance().findItem(name)
             if (promotionItem == null && generalItem != null) {
                 shoppingCartItems.add(GeneralItem(name, generalItem.price, quantity))
@@ -23,6 +23,7 @@ object ShoppingCart {
                 }
             }
         }
+
     }
 
     fun getPromotionItems() =

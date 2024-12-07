@@ -9,15 +9,18 @@ class PromotionManager {
     private fun isOfferPromotionProduct(
         inputProduct: PromotionItem,
         inputQuantity: Int,
+        promotionStock: Int,
     ): Boolean {
         // TODO: 프로모션 기간 체크
         val total = inputProduct.promotion.buy + inputProduct.promotion.get
+//        if (inputQuantity % total != inputProduct.promotion.buy) return false
+        if (inputQuantity + inputProduct.promotion.get >= promotionStock) return false
         return inputQuantity % total == inputProduct.promotion.buy
     }
 
     fun getCanAddOfferPromotionProduct(promotionItems: List<PromotionItem>): List<Pair<PromotionItem, Int>> {
         return promotionItems.filter {
-            isOfferPromotionProduct(it, it.quantity)
+            isOfferPromotionProduct(it, it.quantity, ItemManager.getInstance().findPromotionItem(it.name).quantity)
         }.map { it to it.promotion.get }
     }
 
