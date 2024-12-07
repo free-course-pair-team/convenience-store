@@ -19,7 +19,7 @@ class Controller(
     private val inputView: InputView,
     private val validator: Validator,
     private val promotionManager: PromotionManager,
-    private val membership: Membership
+    private val membership: Membership,
 ) {
 
 
@@ -34,7 +34,8 @@ class Controller(
             inputView.inputProductAndQuantity()
         }
         ShoppingCart.init(validatedProductAndQuantity)
-        askPresentPromotionItem(validatedProductAndQuantity)
+        println("shoppingCartItem: ${ShoppingCart.shoppingCartItems}")
+        askPresentPromotionItem(ShoppingCart.getPromotionItems())
 
         askBuyNotApplyPromotionItem()
         val membershipDiscountAmount = askTakeMembership()
@@ -52,7 +53,8 @@ class Controller(
         for (promotionItem in ShoppingCart.getPromotionItems()) {
             if (promotionItem.quantity % (promotionItem.promotion.buy + promotionItem.promotion.get) == 0) continue
 
-            val notApplyPromotionItemQuantity = ShoppingCart.getNotApplyPromotionItemQuantity(promotionItem)
+            val notApplyPromotionItemQuantity =
+                ShoppingCart.getNotApplyPromotionItemQuantity(promotionItem)
             val generalItemQuantity = ShoppingCart.getGeneralItemQuantity(promotionItem.name)
             val answer = inputRetryAsk {
                 inputView.inputAskAddNotApplyPromotionItem(
@@ -69,13 +71,13 @@ class Controller(
         }
     }
 
-    private fun askPresentPromotionItem(validatedProductAndQuantity: List<Pair<String, Int>>) {
+    private fun askPresentPromotionItem(promotionItems: List<PromotionItem>,) {
         val canAddOfferPromotionProduct =
-            getCanAddOfferPromotionProduct(validatedProductAndQuantity)
-        val t = canAddOfferPromotionProduct.filter {
+            promotionManager.getCanAddOfferPromotionProduct(promotionItems)
+        val acceptAddPromotionProduct = canAddOfferPromotionProduct.filter {
             inputRetryAsk { inputView.inputAskAddPromotionItem(it.first.name, it.second) }
         }
-        ShoppingCart.addPromotionItemQuantity(t)
+        ShoppingCart.addPromotionItemQuantity(acceptAddPromotionProduct)
     }
 
 
@@ -96,18 +98,5 @@ class Controller(
             Answer.YES -> true
             Answer.NO -> false
         }
-    }
-
-    private fun getCanAddOfferPromotionProduct(
-        productAndQuantity: List<Pair<String, Int>>,
-    ): List<Pair<PromotionItem, Int>> {
-
-        val promotionProductAndQuantity = productAndQuantity.filter {
-            ItemManager.getInstance().findPromotionItem(it.first) != null
-        }
-
-        return ShoppingCart.getPromotionItems().filter {
-            promotionManager.isOfferPromotionProduct(it, it.quantity)
-        }.map { it to it.promotion.get }
     }
 }
