@@ -18,16 +18,16 @@ class Receipt {
 //    멤버십할인			-3,000
 //    내실돈			 9,000
 
-    fun showReceipt(membershipDiscountAmount: Int): String {
+    fun showReceipt(membershipDiscountAmount: Int, shoppingCart: ShoppingCart): String {
         val s = StringBuilder()
         s.appendLine("===========W 편의점=============")
         s.appendLine("상품명\t\t수량\t금액")
-        val groupedShoppingCartItems = groupByShoppingCartItems(ShoppingCart.shoppingCartItems)
+        val groupedShoppingCartItems = groupByShoppingCartItems(shoppingCart.getItems())
         groupedShoppingCartItems.forEach { (name, quantity, price) ->
             s.appendLine("${name}\t\t${quantity}\t${price.toWonFormat()}")
         }
         s.appendLine("===========증 정=============")
-        val promotionItems = ShoppingCart.getPromotionItems().map { Triple(it.name, ShoppingCart.getPromotionItemQuantity(it), it.price) }
+        val promotionItems = shoppingCart.getPromotionItems().map { Triple(it.name(), shoppingCart.getPromotionItemQuantity(it), it.price()) }
         promotionItems.forEach { (name, quantity, _) ->
             s.appendLine("${name}\t\t${quantity}")
         }

@@ -1,9 +1,9 @@
 package store.model
 
 data class PromotionItem(
-    val name: String,
-    val price: Int,
-    var quantity: Int,
+    private val name: String,
+    private val price: Int,
+    private var quantity: Int,
     val promotion: Promotion
 ): Item{
     override fun itemMessage() : String {
@@ -19,5 +19,8 @@ data class PromotionItem(
 
     override fun takeOutQuantity(q: Int) {
         quantity -= q
+    }
+    override fun setQuantity(q: Int) {
+        quantity = q
     }
 }

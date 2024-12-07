@@ -19,15 +19,15 @@ class PromotionManager {
 
     // 프로모션 적용 불가능한 상품의 수량이 존재하는지 확인
     fun isExistApplyPromotionProductQuantity(item: PromotionItem): Boolean =
-        item.quantity % (item.promotion.buy + item.promotion.get) != 0
+        item.quantity() % (item.promotion.buy + item.promotion.get) != 0
 
 
     fun getCanAddOfferPromotionProduct(promotionItems: List<PromotionItem>, itemManager: ItemManager): List<Pair<PromotionItem, Int>> {
         return promotionItems.filter {
             isOfferPromotionProduct(
                 it,
-                it.quantity,
-                itemManager.findPromotionItem(it.name).quantity
+                it.quantity(),
+                itemManager.findPromotionItem(it.name()).quantity()
             )
         }.map { it to it.promotion.get }
     }

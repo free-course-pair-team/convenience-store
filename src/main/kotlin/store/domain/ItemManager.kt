@@ -4,17 +4,10 @@ import store.model.GeneralItem
 import store.model.Item
 import store.model.Promotion
 import store.model.PromotionItem
+import store.model.ShoppingCart
 import store.model.Stock
 
 class ItemManager(private val stock: Stock) {
-
-    fun findPromotionItem2(name: String): PromotionItem? {
-        val item = requireNotNull(stock.items.find { it.name() == name })
-        if (item is PromotionItem) {
-            return item
-        }
-        return null
-    }
 
     fun findPromotionItem(name: String): PromotionItem =
         requireNotNull(stock.items.filterIsInstance<PromotionItem>().find { it.name() == name })
@@ -22,8 +15,6 @@ class ItemManager(private val stock: Stock) {
 
     fun findItem(name: String): GeneralItem? {
         return stock.items.filter { it.name() == name }.find { it is GeneralItem } as GeneralItem?
-
-
     }
 
     companion object {

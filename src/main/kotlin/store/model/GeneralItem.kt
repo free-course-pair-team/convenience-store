@@ -1,9 +1,9 @@
 package store.model
 
 data class GeneralItem(
-    val name: String,
-    val price: Int,
-    var quantity: Int,
+    private val name: String,
+    private val price: Int,
+    private var quantity: Int,
 ): Item{
     fun judgeTheQuantity(): String {
         if(quantity == 0) return "재고 없음"
@@ -24,6 +24,10 @@ data class GeneralItem(
 
     override fun takeOutQuantity(q: Int) {
         quantity -= q
+    }
+
+    override fun setQuantity(q: Int) {
+        quantity = q
     }
 
 }

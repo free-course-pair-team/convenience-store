@@ -5,12 +5,12 @@ import store.model.ShoppingCart
 
 class Membership() {
 
-    fun getMemberShipDiscountAmount(): Int =
-        ShoppingCart.getGeneralItems()
-            .sumOf { item -> calculateMembership(item) }.toInt().coerceAtMost(8_000)
+    fun getMemberShipDiscountAmount(shoppingCart: ShoppingCart): Int =
+        shoppingCart.getGeneralItems()
+            .sumOf { item -> calculate(item, shoppingCart) }.toInt().coerceAtMost(8_000)
 
-    private fun calculateMembership(item: GeneralItem) =
-        item.price * (ShoppingCart.getGeneralItemQuantity(item.name) + ShoppingCart.getNotApplyPromotionItemQuantity(
-            item.name
+    private fun calculate(item: GeneralItem, shoppingCart: ShoppingCart) =
+        item.price() * (shoppingCart.getGeneralItemQuantity(item.name()) + shoppingCart.getNotApplyPromotionItemQuantity(
+            item.name()
         )) * 0.3
 }
