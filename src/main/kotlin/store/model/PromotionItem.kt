@@ -8,8 +8,12 @@ data class PromotionItem(
     private var quantity: Int,
     val promotion: Promotion
 ): Item{
+    private fun judgeTheQuantity(): String {
+        if(quantity == 0) return "재고 없음"
+        return quantity.toString() + "개"
+    }
     override fun itemMessage() : String {
-        return "- ${name} ${price.toWonFormat()}원 ${quantity}개 ${promotion.name}"
+        return "- ${name} ${price.toWonFormat()}원 ${judgeTheQuantity()} ${promotion.name}"
     }
 
     override fun name(): String = name

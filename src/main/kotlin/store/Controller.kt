@@ -13,7 +13,6 @@ import store.util.Validator
 import store.util.retryInput
 import store.view.InputView
 import store.view.OutputView
-import java.time.LocalDate
 
 class Controller(
     private val fileReader: FileReader,
@@ -26,10 +25,34 @@ class Controller(
 
 
     fun run() {
+//        val (products, promotions) = readProductsAndPromotionsFile()
+//        val stock = Stock.from(products, promotions)
+//        val itemManager = ItemManager(stock)
+
+//        outputView.introduceStore()
+//        outputView.introduceProducts(stock)
+//
+//        val validatedProductAndQuantity = inputProductAndQuantity {
+//            inputView.inputProductAndQuantity()
+//        }
+//        val shoppingCart = ShoppingCartFactory().generate(validatedProductAndQuantity, stock)
+//        askPresentPromotionItem(shoppingCart, itemManager)
+//
+//        askBuyNotApplyPromotionItem(shoppingCart) { name: String, quantity: Int ->
+//            inputView.inputAskAddNotApplyPromotionItem(name, quantity)
+//        }
+//        val membershipDiscountAmount = askTakeMembership(shoppingCart)
+//        println(Receipt().showReceipt(membershipDiscountAmount, shoppingCart))
+
+        stepOne()
+    }
+    fun stepOne(){
         val (products, promotions) = readProductsAndPromotionsFile()
         val stock = Stock.from(products, promotions)
         val itemManager = ItemManager(stock)
-
+        stepTwo(stock,itemManager)
+    }
+    fun stepTwo(stock: Stock, itemManager: ItemManager) {
         outputView.introduceStore()
         outputView.introduceProducts(stock)
 
@@ -44,6 +67,15 @@ class Controller(
         }
         val membershipDiscountAmount = askTakeMembership(shoppingCart)
         println(Receipt().showReceipt(membershipDiscountAmount, shoppingCart))
+
+        if (inputRetryAsk {
+            for(value in shoppingCart.getItems()){
+                itemManager.takeOutExistingStock(value)
+            }
+
+            inputView.inputAskRepurchaseItem()
+        }) stepTwo(stock,itemManager)
+        else return
     }
 
     private fun askTakeMembership(shoppingCart: ShoppingCart): Int {

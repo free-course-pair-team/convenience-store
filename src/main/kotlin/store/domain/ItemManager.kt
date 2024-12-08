@@ -4,7 +4,6 @@ import store.model.GeneralItem
 import store.model.Item
 import store.model.Promotion
 import store.model.PromotionItem
-import store.model.ShoppingCart
 import store.model.Stock
 
 class ItemManager(private val stock: Stock) {
@@ -13,9 +12,18 @@ class ItemManager(private val stock: Stock) {
         requireNotNull(stock.items.filterIsInstance<PromotionItem>().find { it.name() == name })
 
 
-    fun findItem(name: String): GeneralItem? {
+    fun findGeneralItem(name: String): GeneralItem? {
         return stock.items.filter { it.name() == name }.find { it is GeneralItem } as GeneralItem?
     }
+
+    fun takeOutExistingStock(item: Item) {
+
+        stock.items.forEach{
+            if(it.name() == item.name() && it is GeneralItem) it.takeOutQuantity(item.quantity())
+            if(it.name() == item.name() && it is PromotionItem) it.takeOutQuantity(item.quantity())
+        }
+    }
+
 
     companion object {
         fun getGeneralOrPromotionItem(
