@@ -5,7 +5,6 @@ import store.domain.Membership
 import store.domain.PromotionManager
 import store.domain.ShoppingCartFactory
 import store.model.Answer
-import store.model.PromotionItem
 import store.model.Receipt
 import store.model.ShoppingCart
 import store.model.Stock
@@ -14,6 +13,7 @@ import store.util.Validator
 import store.util.retryInput
 import store.view.InputView
 import store.view.OutputView
+import java.time.LocalDate
 
 class Controller(
     private val fileReader: FileReader,
