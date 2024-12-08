@@ -46,12 +46,14 @@ class Controller(
 
         stepOne()
     }
-    fun stepOne(){
+
+    fun stepOne() {
         val (products, promotions) = readProductsAndPromotionsFile()
         val stock = Stock.from(products, promotions)
         val itemManager = ItemManager(stock)
-        stepTwo(stock,itemManager)
+        stepTwo(stock, itemManager)
     }
+
     fun stepTwo(stock: Stock, itemManager: ItemManager) {
         outputView.introduceStore()
         outputView.introduceProducts(stock)
@@ -68,14 +70,10 @@ class Controller(
         val membershipDiscountAmount = askTakeMembership(shoppingCart)
         println(Receipt().showReceipt(membershipDiscountAmount, shoppingCart))
 
-        if (inputRetryAsk {
-            for(value in shoppingCart.getItems()){
-                itemManager.takeOutExistingStock(value)
-            }
-
-            inputView.inputAskRepurchaseItem()
-        }) stepTwo(stock,itemManager)
-        else return
+        if (inputRetryAsk { inputView.inputAskRepurchaseItem() }) {
+            itemManager.takeOutExistingStock(shoppingCart.getItems())
+            stepTwo(stock, itemManager)
+        }
     }
 
     private fun askTakeMembership(shoppingCart: ShoppingCart): Int {
@@ -119,7 +117,7 @@ class Controller(
     private fun inputProductAndQuantity(input: () -> String) = retryInput {
         val inputProductAndQuantityList = input().split(",")
         inputProductAndQuantityList.map {
-            validator.validateInputProductAndQuantity(it, Stock.getInstance().items)
+            validator.validateInputProductAndQuantity(it, Stock.getInstance().getItems())
         }
     }
 

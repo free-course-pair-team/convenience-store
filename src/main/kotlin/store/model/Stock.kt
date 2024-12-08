@@ -3,7 +3,9 @@ package store.model
 import store.domain.ItemManager
 import store.domain.PromotionManager
 
-data class Stock(val items: MutableList<Item>) {
+data class Stock(private val items: MutableList<Item>) {
+
+    fun getItems() = items.toList()
     override fun toString(): String {
         var last: Item = items.first()
         val printedItems = mutableListOf<Item>()

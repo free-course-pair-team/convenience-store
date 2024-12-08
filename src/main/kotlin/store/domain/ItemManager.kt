@@ -9,19 +9,40 @@ import store.model.Stock
 class ItemManager(private val stock: Stock) {
 
     fun findPromotionItem(name: String): PromotionItem =
-        requireNotNull(stock.items.filterIsInstance<PromotionItem>().find { it.name() == name })
+        requireNotNull(stock.getItems().filterIsInstance<PromotionItem>().find { it.name() == name })
 
 
     fun findGeneralItem(name: String): GeneralItem? {
-        return stock.items.filter { it.name() == name }.find { it is GeneralItem } as GeneralItem?
+        return stock.getItems().filter { it.name() == name }.find { it is GeneralItem } as GeneralItem?
     }
 
-    fun takeOutExistingStock(item: Item) {
-
-        stock.items.forEach{
-            if(it.name() == item.name() && it is GeneralItem) it.takeOutQuantity(item.quantity())
-            if(it.name() == item.name() && it is PromotionItem) it.takeOutQuantity(item.quantity())
+    fun takeOutExistingStock(shoppingCartItems: List<Item>) {
+        shoppingCartItems.forEach { item ->
+            var remainingQuantity = item.quantity()
+            for (stockItem in stock.getItems().filter { it.name() == item.name() }) {
+                if (remainingQuantity > stockItem.quantity()) {
+                    stockItem.setQuantity(0)
+                    remainingQuantity -= stockItem.quantity()
+                    continue
+                }
+                if (remainingQuantity > 0) {
+                    stockItem.apply { takeOutQuantity(remainingQuantity) }
+                    remainingQuantity = 0
+                }
+            }
         }
+
+
+//        stock.items.forEach{
+//            if(it.name() == item.name() && item is GeneralItem) {
+//                it.takeOutQuantity(item.quantity())
+//                println("item: $item")
+//            }
+//            if(it.name() == item.name() && item is PromotionItem) {
+//                it.takeOutQuantity(item.quantity())
+//                println("item: $item")
+//            }
+//        }
     }
 
 

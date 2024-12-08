@@ -16,7 +16,6 @@ class PromotionManager {
         inputQuantity: Int,
         promotionStock: Int,
     ): Boolean {
-        // TODO: 프로모션 기간 체크
         val total = inputProduct.promotion.buy + inputProduct.promotion.get
         if (inputQuantity + inputProduct.promotion.get >= promotionStock) return false
         return inputQuantity % total == inputProduct.promotion.buy
@@ -48,5 +47,4 @@ class PromotionManager {
         if (current.dayOfMonth !in startDate[2]..endDate[2]) return false
         return true
     }
-
 }

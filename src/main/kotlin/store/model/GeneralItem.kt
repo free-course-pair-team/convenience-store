@@ -28,7 +28,7 @@ data class GeneralItem(
         quantity -= q
     }
 
-    override fun setQuantity(q: Int) {
+    override fun setQuantity(q: Int) = apply {
         quantity = q
     }
 
